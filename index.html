@@ -1,117 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kubu — Modular Home in Bali, 7 × 4 m</title>
-<meta name="description" content="Kubu is a 28 m² modular home for Bali: black steel frame lifted 60 cm, glass and timber modules, terracotta mono-pitch roof. Explore it in 3D.">
-<meta name="theme-color" content="#f2c49b">
-<meta property="og:title" content="Kubu — Modular Home in Bali">
-<meta property="og:description" content="Three modules, one terracotta roof, 28 m² of tropical living. Explore the house in 3D.">
+<title>Строим домик на Бали — модульный дом 7 × 4 м в 3D</title>
+<meta name="description" content="Модульный дом 28 м² на Бали: стальной каркас на ножках, стекло и дерево, односкатная крыша из черепицы. Смотрите дом в 3D и следите за стройкой.">
+<meta name="theme-color" content="#e7eaf4">
+<meta property="og:title" content="Строим дом на Бали — честно и по шагам">
+<meta property="og:description" content="Модульный дом 28 м² на Бали. Каждый шаг снимаем и записываем: деньги, сроки, ошибки.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap" rel="stylesheet">
 
 <style>
 :root{
-  --black:#1c1a17;
-  --terra:#c2562f;
-  --wood:#c99a64;
-  --cream:#f7eddf;
-  --green:#5f7149;
-  --card:rgba(247,237,223,.8);
-  --radius:22px;
+  --ink:#1f1d5c;          /* тёмно-синий текст */
+  --violet:#3b2a9e;       /* кнопки, акценты */
+  --violet-2:#5446b8;     /* линии над цифрами */
+  --muted:rgba(31,29,92,.68);
+  --line:rgba(31,29,92,.14);
+  --paper:rgba(255,255,255,.86);
+  --radius:14px;
   --ease:cubic-bezier(.22,.61,.36,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;touch-action:pan-y pinch-zoom;-webkit-text-size-adjust:100%}
 body{
-  font-family:"Manrope",system-ui,sans-serif;
-  color:var(--black);
-  background:#f4d2ae;
+  font-family:"Literata",Georgia,serif;
+  color:var(--ink);
+  background:#f1ede6;
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
 a{color:inherit}
 
-/* ---------- Background: sunset gradient ---------- */
+/* ---------- Фон: светлое небо ---------- */
 .sky{
   position:fixed;inset:0;z-index:0;
   background:
-    radial-gradient(60vmax 40vmax at 72% 30%, rgba(255,214,150,.75), rgba(255,214,150,0) 70%),
-    linear-gradient(180deg,#e59a6e 0%,#f0b88d 26%,#f6d3ad 52%,#f7e6cf 76%,var(--cream) 100%);
+    radial-gradient(55vmax 35vmax at 75% 28%, rgba(255,226,190,.55), rgba(255,226,190,0) 70%),
+    linear-gradient(180deg,#e7eaf4 0%,#eeedf0 30%,#f4eee6 58%,#f2e8da 100%);
 }
-.sky::after{ /* soft horizon haze */
-  content:"";position:absolute;left:0;right:0;bottom:0;height:45%;
-  background:linear-gradient(180deg,rgba(247,237,223,0),rgba(247,237,223,.65));
+.sky::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:40%;
+  background:linear-gradient(180deg,rgba(244,238,230,0),rgba(244,238,230,.7));
 }
 .no-webgl .sky{background:url(house-7x4.webp) center/cover no-repeat}
-.no-webgl .sky::after{background:rgba(28,26,23,.25);height:100%}
+.no-webgl .sky::after{background:rgba(31,29,92,.2);height:100%}
 
 #scene{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;display:block;outline:none}
 
-/* ---------- Top UI ---------- */
-.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:20;background:rgba(28,26,23,.08)}
-.progress span{display:block;height:100%;background:var(--terra);transform-origin:0 50%;transform:scaleX(0)}
+/* ---------- Верхняя панель ---------- */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:20;background:rgba(31,29,92,.08)}
+.progress span{display:block;height:100%;background:var(--violet);transform-origin:0 50%;transform:scaleX(0)}
 
 .top{
   position:fixed;top:0;left:0;right:0;z-index:15;
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px clamp(16px,4vw,48px);
+  padding:16px clamp(16px,4vw,48px);
   pointer-events:none;
 }
 .top>*{pointer-events:auto}
-.logo{font-family:"Fraunces",serif;font-weight:700;font-size:22px;text-decoration:none;letter-spacing:-.01em}
-.logo b{color:var(--terra);font-weight:700}
-.logo small{font-family:"Manrope",sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-left:8px;opacity:.6}
+.logo{display:inline-flex;align-items:center;gap:10px;font-family:"Roboto Slab",serif;font-weight:700;font-size:19px;text-decoration:none;color:var(--ink)}
+.logo-mark{height:44px;width:auto;flex:none}
+.logo-text span{color:var(--violet)}
 
 .btn{
-  display:inline-flex;align-items:center;gap:8px;
-  font:600 14px/1 "Manrope",sans-serif;text-decoration:none;
-  padding:13px 20px;border-radius:999px;border:1.5px solid var(--black);
-  transition:background .25s var(--ease),color .25s var(--ease),transform .25s var(--ease);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font:600 15px/1 "Roboto Slab",serif;text-decoration:none;
+  padding:15px 22px;border-radius:8px;border:1.5px solid var(--violet);
+  transition:background .25s var(--ease),color .25s var(--ease),box-shadow .25s var(--ease);
   cursor:pointer;
 }
-.btn:hover{transform:translateY(-2px)}
-.btn.solid{background:var(--black);color:var(--cream)}
-.btn.solid:hover{background:var(--terra);border-color:var(--terra)}
-.btn.ghost{background:transparent}
-.btn.ghost:hover{background:var(--black);color:var(--cream)}
+.btn.solid{background:var(--violet);color:#fff;box-shadow:0 8px 20px -10px rgba(59,42,158,.7)}
+.btn.solid:hover{background:#2e2084;border-color:#2e2084}
+.btn.ghost{background:transparent;color:var(--violet)}
+.btn.ghost:hover{background:rgba(59,42,158,.08)}
 .btn.small{padding:10px 16px;font-size:13px}
-.btn:focus-visible,.dots button:focus-visible{outline:2px solid var(--terra);outline-offset:3px}
+.btn.block{width:100%}
+.btn:focus-visible,.dots button:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
 
-/* ---------- Step dots ---------- */
+/* ---------- Точки-шаги ---------- */
 .dots{
   position:fixed;right:clamp(12px,2.4vw,32px);top:50%;transform:translateY(-50%);
   z-index:15;display:flex;flex-direction:column;gap:14px;
 }
 .dots button{
-  position:relative;width:12px;height:12px;border-radius:50%;
-  border:1.5px solid var(--black);background:transparent;cursor:pointer;
+  position:relative;width:11px;height:11px;border-radius:50%;
+  border:1.5px solid var(--ink);background:transparent;cursor:pointer;
   transition:background .3s var(--ease),transform .3s var(--ease),border-color .3s;
 }
-.dots button.active{background:var(--terra);border-color:var(--terra);transform:scale(1.25)}
+.dots button.active{background:var(--violet);border-color:var(--violet);transform:scale(1.25)}
 .dots button span{
   position:absolute;right:22px;top:50%;transform:translate(6px,-50%);
-  white-space:nowrap;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  white-space:nowrap;font:600 11px/1 "Roboto Slab",serif;letter-spacing:.08em;text-transform:uppercase;
   opacity:0;pointer-events:none;transition:opacity .25s,transform .25s var(--ease);
 }
-.dots button:hover span,.dots button.active span{opacity:1;transform:translate(0,-50%)}
+.dots button:hover span,.dots button:focus-visible span{opacity:1;transform:translate(0,-50%)}
 
-/* ---------- Scroll hint ---------- */
+/* ---------- Подсказка ---------- */
 .hint{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:14;
   display:flex;flex-direction:column;align-items:center;gap:10px;
-  font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  font:600 11px/1 "Roboto Slab",serif;letter-spacing:.16em;text-transform:uppercase;
   transition:opacity .4s var(--ease);pointer-events:none;
 }
-.hint i{width:1.5px;height:38px;background:rgba(28,26,23,.2);position:relative;overflow:hidden}
-.hint i::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--black);animation:drip 1.8s var(--ease) infinite}
+.hint i{width:1.5px;height:38px;background:rgba(31,29,92,.2);position:relative;overflow:hidden}
+.hint i::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--violet);animation:drip 1.8s var(--ease) infinite}
 @keyframes drip{to{top:100%}}
 
-/* ---------- Sections & cards ---------- */
+/* ---------- Секции и карточки ---------- */
 main{position:relative;z-index:5}
 .step{
   height:100vh;height:100svh;
@@ -122,67 +122,70 @@ main{position:relative;z-index:5}
 .step.right{justify-content:flex-end;padding-right:clamp(64px,8vw,130px)}
 .card{
   pointer-events:auto;
-  width:100%;max-width:430px;
-  background:var(--card);
-  -webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);
-  border:1px solid rgba(255,255,255,.55);
+  width:100%;max-width:420px;
+  background:var(--paper);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
   border-radius:var(--radius);
-  padding:32px 32px 30px;
-  box-shadow:0 24px 60px -24px rgba(80,40,20,.35);
-  opacity:0;transform:translateY(28px);
+  padding:28px 28px 26px;
+  box-shadow:0 18px 40px -22px rgba(31,29,92,.35);
+  opacity:0;transform:translateY(24px);
   transition:opacity .8s var(--ease),transform .8s var(--ease);
 }
 .step.in .card{opacity:1;transform:none}
+.badge{
+  display:inline-block;margin-bottom:14px;
+  font:700 10.5px/1 "Roboto Slab",serif;letter-spacing:.1em;text-transform:uppercase;
+  padding:6px 9px;border-radius:6px;background:rgba(84,70,184,.1);color:var(--ink);
+}
 .eyebrow{
-  display:flex;align-items:center;gap:10px;
-  font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--terra);
-  margin-bottom:14px;
+  font:600 11.5px/1.2 "Roboto Slab",serif;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--violet-2);margin-bottom:12px;
 }
-.eyebrow b{font-family:"Fraunces",serif;font-size:15px;letter-spacing:0;color:var(--black)}
-.eyebrow::after{content:"";flex:0 0 28px;height:1.5px;background:currentColor;opacity:.6}
-h1,h2{font-family:"Fraunces",serif;font-weight:600;letter-spacing:-.02em;line-height:1.05}
-h1{font-size:clamp(38px,4.6vw,62px);margin-bottom:16px}
-h2{font-size:clamp(28px,3vw,40px);margin-bottom:14px}
-h1 em,h2 em{font-style:italic;color:var(--terra);font-weight:600}
-.card p{font-size:16px;color:rgba(28,26,23,.82)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 24px}
-.chips span{
-  font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:999px;
-  background:rgba(28,26,23,.06);border:1px solid rgba(28,26,23,.1);
-}
-.chips span::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:7px;vertical-align:1px}
+h1,h2{font-family:"Roboto Slab",serif;font-weight:700;color:var(--ink);line-height:1.18;letter-spacing:-.005em}
+h1{font-size:clamp(28px,2.9vw,40px);margin-bottom:14px}
+h2{font-size:clamp(24px,2.4vw,32px);margin-bottom:12px}
+h1 em,h2 em{font-style:normal;color:var(--violet)}
+.card p{font-size:15.5px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 22px}
+.stats.two{grid-template-columns:repeat(2,1fr)}
+.stats div{border-top:2px solid var(--violet-2);padding-top:9px}
+.stats b{display:block;font:700 20px/1.2 "Roboto Slab",serif;color:var(--ink);white-space:nowrap}
+.stats span{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
 .actions{display:flex;flex-wrap:wrap;gap:10px}
-.facts{list-style:none;margin-top:20px;border-top:1px solid rgba(28,26,23,.12)}
-.facts li{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid rgba(28,26,23,.12);font-size:14.5px}
-.facts li b{font-family:"Fraunces",serif;font-weight:600;font-size:17px}
-.facts li .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:0}
-.cta-card{max-width:470px}
-.cta-card .price{font-family:"Fraunces",serif;font-size:20px;margin:18px 0 22px}
-.cta-card .price b{font-size:34px;color:var(--terra)}
-.foot{margin-top:22px;font-size:12px;opacity:.55}
+.facts{list-style:none;margin-top:18px;border-top:2px solid var(--violet-2)}
+.facts li{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--muted)}
+.facts li b{font:700 16px/1.3 "Roboto Slab",serif;color:var(--ink)}
+.facts li .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px}
+.cta-card{max-width:440px}
+.cta-card .actions{margin-top:22px}
+.foot{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.foot-mark{height:30px;width:auto;flex:none}
 
-/* ---------- Mobile-first overrides (phones) ---------- */
+/* ---------- Телефоны ---------- */
 @media (max-width:759px){
-  .top{padding:14px 16px}
-  .logo{font-size:19px}
-  .logo small{display:none}
+  .top{padding:12px 16px}
+  .logo{font-size:17px;gap:8px}
+  .logo-mark{height:34px}
   .step,.step.right{
     align-items:flex-end;justify-content:center;
     padding:0 12px calc(14px + env(safe-area-inset-bottom));
   }
-  .card{max-width:none;padding:20px 20px 18px;border-radius:18px}
-  h1{font-size:clamp(30px,8.6vw,38px);margin-bottom:10px}
-  h2{font-size:clamp(24px,7vw,30px);margin-bottom:8px}
-  .card p{font-size:14.5px}
-  .eyebrow{margin-bottom:8px;font-size:11px}
-  .chips{margin:14px 0 16px}
+  .card{max-width:none;padding:18px 18px 16px;border-radius:12px}
+  .badge{margin-bottom:10px}
+  .eyebrow{margin-bottom:8px;font-size:10.5px}
+  h1{font-size:clamp(24px,7vw,30px);margin-bottom:8px}
+  h2{font-size:clamp(21px,6vw,26px);margin-bottom:8px}
+  .card p{font-size:14px}
+  .stats{margin:14px 0 16px}
+  .stats b{font-size:17px}
+  .stats span{font-size:11.5px}
   .facts{margin-top:12px}
   .facts li{padding:8px 0;font-size:13.5px}
-  .cta-card .price{margin:12px 0 16px}
+  .actions .btn{flex:1 1 100%}
   .dots{right:8px;top:38%;gap:10px}
   .dots button{width:9px;height:9px}
   .dots button span{display:none}
-  .hint{bottom:auto;top:62px;flex-direction:row;font-size:10px}
+  .hint{bottom:auto;top:58px;flex-direction:row;font-size:10px}
   .hint i{width:22px;height:1.5px}
   .hint i::after{animation:none;width:100%;height:100%;top:0}
 }
@@ -200,92 +203,119 @@ h1 em,h2 em{font-style:italic;color:var(--terra);font-weight:600}
 <body>
 
 <div class="sky" aria-hidden="true"></div>
-<canvas id="scene" aria-label="3D model of the Kubu modular house" role="img"></canvas>
+<canvas id="scene" aria-label="3D-модель модульного домика" role="img"></canvas>
 
 <div class="progress" aria-hidden="true"><span></span></div>
 
 <header class="top">
-  <a class="logo" href="#hero">Ku<b>bu</b><small>Modular · Bali</small></a>
-  <a class="btn solid small" href="#cta">Reserve a build</a>
+  <a class="logo" href="#hero" aria-label="Домик на Бали — в начало">
+    <svg class="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" aria-hidden="true" focusable="false">
+      <path d="M65 135 V55 L160 5 L255 55 V135" fill="none" stroke="#240052" stroke-width="11" stroke-linejoin="miter"/>
+      <g fill="#368EDC">
+        <rect x="139" y="70" width="18" height="18"/>
+        <rect x="163" y="70" width="18" height="18"/>
+        <rect x="139" y="94" width="18" height="18"/>
+        <rect x="163" y="94" width="18" height="18"/>
+      </g>
+      <path d="M5 165 Q160 105 315 165" fill="none" stroke="#240052" stroke-width="5"/>
+    </svg>
+  </a>
+  <a class="btn solid small" href="#frame">Смотреть дом</a>
 </header>
 
-<nav class="dots" aria-label="Sections"></nav>
+<nav class="dots" aria-label="Разделы"></nav>
 
-<div class="hint" aria-hidden="true">scroll to explore <i></i></div>
+<div class="hint" aria-hidden="true">листайте вниз <i></i></div>
 
 <main>
-  <section class="step" id="hero" data-label="Hero">
+  <section class="step" id="hero" data-label="Начало">
     <div class="card">
-      <div class="eyebrow">Modular home · Bali</div>
-      <h1>A whole villa in <em>three</em> modules.</h1>
-      <p>28 m² of steel, glass and timber — built off-site, craned in and lifted 60 cm above the rice fields.</p>
-      <div class="chips"><span>7 × 4 m</span><span>28 m²</span><span>3 modules</span></div>
-      <div class="actions">
-        <a class="btn solid" href="#frame">Explore the build</a>
-        <a class="btn ghost" href="#cta">Pricing</a>
+      <span class="badge">Концепт</span>
+      <div class="eyebrow">Проект 7 × 4 · Бали</div>
+      <h1>Строим дом на Бали — <em>честно и по шагам</em></h1>
+      <p>Каждый шаг снимаем и записываем: деньги, сроки, ошибки.</p>
+      <div class="stats">
+        <div><b>28 м²</b><span>площадь</span></div>
+        <div><b>1</b><span>спальня</span></div>
+        <div><b>≈ 4–4,5 т</b><span>примерный вес</span></div>
+      </div>
+      <a class="btn solid block" href="#frame">Смотреть дом</a>
+    </div>
+  </section>
+
+  <section class="step right" id="frame" data-label="Каркас">
+    <div class="card">
+      <div class="eyebrow">01 · Каркас</div>
+      <h2>Чёрная сталь <em>на ножках</em></h2>
+      <p>Стальной каркас стоит на 18 регулируемых опорах с опорными плитами. 60 см воздуха под полом спасают от влажности, термитов и сезона дождей — и почти не трогают участок.</p>
+      <div class="stats two">
+        <div><b>60 см</b><span>над землёй</span></div>
+        <div><b>18</b><span>опор</span></div>
       </div>
     </div>
   </section>
 
-  <section class="step right" id="frame" data-label="Frame">
+  <section class="step" id="skin" data-label="Стены">
     <div class="card">
-      <div class="eyebrow"><b>01</b> Frame</div>
-      <h2>Black steel, <em>lifted</em> off the ground.</h2>
-      <p>A powder-coated steel chassis stands on eighteen adjustable legs with base plates. 60 cm of air underneath keeps out humidity, termites and monsoon water — and leaves the soil untouched.</p>
+      <div class="eyebrow">02 · Стены</div>
+      <h2>Стекло, дерево, <em>железный каркас</em></h2>
+      <p>Раздвижные стеклянные двери от пола до потолка открывают гостиную и спальню в сад. Средний модуль обшит вертикальной доской с чёрными X-раскосами и маленьким матовым окном.</p>
+    </div>
+  </section>
+
+  <section class="step right" id="roof" data-label="Крыша">
+    <div class="card">
+      <div class="eyebrow">03 · Крыша</div>
+      <h2>Одна <em>односкатная</em> крыша</h2>
+      <p>Сплошной скат из терракотовой черепицы накрывает все три модуля. Вода уходит в один водосток спереди, а глубокие свесы прячут стекло от вечернего солнца.</p>
+    </div>
+  </section>
+
+  <section class="step" id="modules" data-label="Модули">
+    <div class="card">
+      <div class="eyebrow">04 · Модули</div>
+      <h2>Три модуля — <em>один дом</em></h2>
+      <p>Дом делится на три части: гостиная с кухней, душевая и спальня. Так проще планировать стройку и считать бюджет — и показывать вам каждый модуль по шагам.</p>
+      <div class="stats two">
+        <div><b>3</b><span>модуля</span></div>
+        <div><b>≈ 4–4,5 т</b><span>примерный вес</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step right" id="layout" data-label="Планировка">
+    <div class="card">
+      <div class="eyebrow">05 · Планировка</div>
+      <h2>28 м², <em>ничего лишнего</em></h2>
       <ul class="facts">
-        <li>Clearance <b>60 cm</b></li>
-        <li>Footprint <b>7 × 4 m</b></li>
+        <li><span><i class="sw" style="background:#c99a64"></i>Гостиная + кухня</span><b>10,4 м²</b></li>
+        <li><span><i class="sw" style="background:#5f7149"></i>Душевая</span><b>7,2 м²</b></li>
+        <li><span><i class="sw" style="background:#5446b8"></i>Спальня</span><b>10,4 м²</b></li>
       </ul>
     </div>
   </section>
 
-  <section class="step" id="skin" data-label="Skin">
-    <div class="card">
-      <div class="eyebrow"><b>02</b> Skin</div>
-      <h2>Glass to live in, <em>timber</em> to hide in.</h2>
-      <p>Floor-to-ceiling sliding glass opens the living room and bedroom to the garden. The middle module is clad in vertical timber with black X-bracing and a single frosted window for privacy.</p>
-    </div>
-  </section>
-
-  <section class="step right" id="roof" data-label="Roof">
-    <div class="card">
-      <div class="eyebrow"><b>03</b> Roof</div>
-      <h2>Terracotta, the way <em>Bali</em> builds it.</h2>
-      <p>One continuous mono-pitch roof in clay tiles ties all three modules together. It sheds tropical rain to a single front gutter, and deep eaves shade the glass from the afternoon sun.</p>
-    </div>
-  </section>
-
-  <section class="step" id="modules" data-label="Modules">
-    <div class="card">
-      <div class="eyebrow"><b>04</b> Modules</div>
-      <h2>Built in a workshop. <em>Assembled</em> in a day.</h2>
-      <p>Each module leaves the factory finished — wiring, plumbing, furniture. On site they are craned onto the legs and bolted together, then the roof drops on top.</p>
-    </div>
-  </section>
-
-  <section class="step right" id="layout" data-label="Layout">
-    <div class="card">
-      <div class="eyebrow"><b>05</b> Layout</div>
-      <h2>28 m², <em>nothing</em> wasted.</h2>
-      <ul class="facts">
-        <li><span><i class="sw" style="background:var(--wood)"></i>Living + kitchen</span><b>10.4 m²</b></li>
-        <li><span><i class="sw" style="background:var(--green)"></i>Shower room</span><b>7.2 m²</b></li>
-        <li><span><i class="sw" style="background:var(--terra)"></i>Bedroom</span><b>10.4 m²</b></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="step" id="cta" data-label="Start">
+  <section class="step" id="cta" data-label="Дальше">
     <div class="card cta-card">
-      <div class="eyebrow"><b>06</b> Your turn</div>
-      <h2>Your hideaway, ready in <em>12 weeks</em>.</h2>
-      <p>Pick a plot, choose the finishes — we handle permits, production and installation anywhere in Bali.</p>
-      <div class="price">from <b>$34 900</b></div>
+      <div class="eyebrow">06 · Дальше</div>
+      <h2>Следите <em>за стройкой</em></h2>
+      <p>Каждый шаг снимаем и записываем: сколько стоило, сколько заняло и где ошиблись. Подпишитесь — пришлём новый выпуск, как только он выйдет.</p>
       <div class="actions">
-        <a class="btn solid" href="mailto:hello@example.com?subject=Kubu%20modular%20home">Book a call</a>
-        <a class="btn ghost" href="#hero">Back to top</a>
+        <a class="btn solid" href="mailto:hello@example.com?subject=%D0%94%D0%BE%D0%BC%D0%B8%D0%BA%20%D0%BD%D0%B0%20%D0%91%D0%B0%D0%BB%D0%B8">Подписаться</a>
+        <a class="btn ghost" href="#hero">Наверх</a>
       </div>
-      <div class="foot">© Kubu Modular. 3D model drawn entirely in code.</div>
+      <div class="foot">
+        <svg class="foot-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" aria-hidden="true" focusable="false">
+          <path d="M65 135 V55 L160 5 L255 55 V135" fill="none" stroke="#240052" stroke-width="11" stroke-linejoin="miter"/>
+          <g fill="#368EDC">
+            <rect x="139" y="70" width="18" height="18"/>
+            <rect x="163" y="70" width="18" height="18"/>
+            <rect x="139" y="94" width="18" height="18"/>
+            <rect x="163" y="94" width="18" height="18"/>
+          </g>
+          <path d="M5 165 Q160 105 315 165" fill="none" stroke="#240052" stroke-width="5"/>
+        </svg>
+      </div>
     </div>
   </section>
 </main>
@@ -439,6 +469,7 @@ const M = {
   stair: std({ map: woodTex, color: 0xd9ad7c, roughness: 0.8 }),
   glass: std({ color: 0xd6ecef, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide }),
   fabric: std({ color: 0xeee2cd, roughness: 1 }),
+  curtain: std({ color: 0x8f8c87, roughness: 1, side: THREE.DoubleSide }),
   white: std({ color: 0xf6f3ec, roughness: 0.85 }),
   ceramic: std({ color: 0xf7f6f2, roughness: 0.25 }),
   green: std({ color: 0x5f7149, roughness: 0.9 }),
@@ -526,6 +557,18 @@ function strap(x0, y0, x1, y1, z, parent) {
 function pane(w, h, x, y, z, ry, parent) {
   const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), M.glass);
   m.position.set(x, y, z); m.rotation.y = ry; m.renderOrder = 2;
+  parent.add(m);
+  return m;
+}
+// Soft wavy curtain from floor to ceiling
+function curtain(width, x, z, ry, parent) {
+  const h = 2.34, geo = new THREE.PlaneGeometry(width, h, 32, 1);
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getX(i) / width * Math.PI * 7) * 0.03);
+  geo.computeVertexNormals();
+  const m = shadow(new THREE.Mesh(geo, M.curtain));
+  m.position.set(x, 0.81 + h / 2, z);
+  m.rotation.y = ry;
   parent.add(m);
   return m;
 }
@@ -733,18 +776,18 @@ function buildBedroom() {
   g.add(art);
 
   // Nightstand + lamp
-  const nx = 0.95, nz = -INZ + 0.25;
-  box(0.42, 0.48, 0.4, M.cabinet, nx, 1.04, nz, g);
+  const nx = 0.9, nz = -INZ + 0.25;
+  box(0.38, 0.48, 0.38, M.cabinet, nx, 1.04, nz, g);
   cyl(0.05, 0.07, 0.2, M.counter, nx, 1.38, nz, g, 14);
   cyl(0.09, 0.14, 0.18, M.lampShade, nx, 1.57, nz, g, 20).castShadow = false;
   warmLight(0xffb15c, 4, 3, nx, 1.62, nz + 0.1, g);
 
-  // Curtains near the glass
-  for (const e of [-1, 1]) {
-    for (let k = 0; k < 3; k++) box(0.05, 2.3, 0.16, M.white, w / 2 - 0.16 - (k % 2) * 0.04, 1.97, e * (1.55 - k * 0.14), g);
-  }
-  for (let k = 0; k < 3; k++) box(0.16, 2.3, 0.05, M.white, -1.05 + k * 0.14, 1.97, INZ - 0.08 - (k % 2) * 0.04, g);
-  bigPlant(0.95, 1.45, g);
+  // Grey floor-length curtains on black rods
+  const cx = w / 2 - 0.11; // tight to the glass, clear of the nightstand
+  for (const e of [-1, 1]) curtain(0.6, cx, e * 1.5, Math.PI / 2, g);
+  rod([cx, 3.13, -INZ + 0.05], [cx, 3.13, INZ - 0.05], 0.012, M.steel, g);
+  curtain(0.55, -0.95, INZ - 0.1, 0, g);
+  rod([-1.25, 3.13, INZ - 0.1], [-0.6, 3.13, INZ - 0.1], 0.012, M.steel, g);
 
   // Downpipe at the front outer corner
   {
@@ -925,7 +968,7 @@ const dotsNav = document.querySelector('.dots');
 const dots = sections.map((s, i) => {
   const b = document.createElement('button');
   b.type = 'button';
-  b.setAttribute('aria-label', `Go to ${s.dataset.label}`);
+  b.setAttribute('aria-label', `Перейти: ${s.dataset.label}`);
   b.innerHTML = `<span>${s.dataset.label}</span>`;
   b.addEventListener('click', () => s.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }));
   dotsNav.appendChild(b);
