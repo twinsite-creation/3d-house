@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kubu — Modular Home in Bali, 7 × 4 m</title>
-<meta name="description" content="Kubu is a 28 m² modular home for Bali: black steel frame lifted 60 cm, glass and timber modules, terracotta hip roof. Explore it in 3D.">
+<meta name="description" content="Kubu is a 28 m² modular home for Bali: black steel frame lifted 60 cm, glass and timber modules, terracotta mono-pitch roof. Explore it in 3D.">
 <meta name="theme-color" content="#f2c49b">
 <meta property="og:title" content="Kubu — Modular Home in Bali">
 <meta property="og:description" content="Three modules, one terracotta roof, 28 m² of tropical living. Explore the house in 3D.">
@@ -251,7 +251,7 @@ h1 em,h2 em{font-style:italic;color:var(--terra);font-weight:600}
     <div class="card">
       <div class="eyebrow"><b>03</b> Roof</div>
       <h2>Terracotta, the way <em>Bali</em> builds it.</h2>
-      <p>Three hipped roofs in clay tiles shed tropical rain fast. Gutters and downpipes take it straight to the ground, and deep eaves shade the glass from the afternoon sun.</p>
+      <p>One continuous mono-pitch roof in clay tiles ties all three modules together. It sheds tropical rain to a single front gutter, and deep eaves shade the glass from the afternoon sun.</p>
     </div>
   </section>
 
@@ -259,7 +259,7 @@ h1 em,h2 em{font-style:italic;color:var(--terra);font-weight:600}
     <div class="card">
       <div class="eyebrow"><b>04</b> Modules</div>
       <h2>Built in a workshop. <em>Assembled</em> in a day.</h2>
-      <p>Each module leaves the factory finished — wiring, plumbing, furniture. On site they are craned onto the legs and bolted together, then the roofs drop on top.</p>
+      <p>Each module leaves the factory finished — wiring, plumbing, furniture. On site they are craned onto the legs and bolted together, then the roof drops on top.</p>
     </div>
   </section>
 
@@ -466,9 +466,11 @@ const R = {
   fascia: std({ color: 0x2a2520, roughness: 0.7 }),
   gutter: std({ color: 0x1c1a17, roughness: 0.45, metalness: 0.5 }),
   ceiling: std({ map: woodTex, color: 0xe8cfae, roughness: 0.8 }),
+  clad: std({ map: woodTex, color: 0xc49464, roughness: 0.8, side: THREE.DoubleSide }),
   spot: std({ color: 0xfff1d6, emissive: 0xffc77e, emissiveIntensity: 4 }),
 };
 R.ceiling.userData.uv = 1.2;
+R.clad.userData.uv = 1.2;
 const roofMats = Object.values(R);
 
 /* =========================================================
@@ -648,9 +650,9 @@ function buildLiving() {
     for (const e of [-1, 1]) box(0.05, top - 0.05, 0.28, M.stair, 0.78 + e * 0.36, (top - 0.05) / 2, z, g);
   }
 
-  // Downpipes at outer corners
-  for (const e of [-1, 1]) {
-    const x = -w / 2 - 0.28, z = e * (D / 2 + 0.3);
+  // Downpipe at the front outer corner
+  {
+    const x = -w / 2 - 0.28, z = D / 2 + 0.42;
     rod([x, 3.3, z], [x, 0.22, z], 0.035, M.steel, g);
     rod([x, 0.24, z], [x - 0.12, 0.06, z], 0.035, M.steel, g);
   }
@@ -744,9 +746,9 @@ function buildBedroom() {
   for (let k = 0; k < 3; k++) box(0.16, 2.3, 0.05, M.white, -1.05 + k * 0.14, 1.97, INZ - 0.08 - (k % 2) * 0.04, g);
   bigPlant(0.95, 1.45, g);
 
-  // Downpipes at outer corners
-  for (const e of [-1, 1]) {
-    const x = w / 2 + 0.28, z = e * (D / 2 + 0.3);
+  // Downpipe at the front outer corner
+  {
+    const x = w / 2 + 0.28, z = D / 2 + 0.42;
     rod([x, 3.3, z], [x, 0.22, z], 0.035, M.steel, g);
     rod([x, 0.24, z], [x + 0.12, 0.06, z], 0.035, M.steel, g);
   }
@@ -755,54 +757,53 @@ function buildBedroom() {
   return g;
 }
 
-/* ---------- Hip roof with tile UVs ---------- */
-function hipGeometry(x0, x1, z0, z1, h, ix) {
-  const zm = (z0 + z1) / 2;
-  const V = (x, y, z) => new THREE.Vector3(x, y, z);
-  const a = V(x0, 0, z1), b = V(x1, 0, z1), c = V(x1, 0, z0), d = V(x0, 0, z0);
-  const r1 = V(x0 + ix, h, zm), r2 = V(x1 - ix, h, zm);
-  const tris = [[a, b, r2], [a, r2, r1], [c, d, r1], [c, r1, r2], [b, c, r2], [d, a, r1]];
-  const pos = [], uv = [];
-  for (const [p, q, r] of tris) {
-    const n = q.clone().sub(p).cross(r.clone().sub(p)).normalize();
-    const t = UP.clone().cross(n).normalize();
-    const s = n.clone().cross(t);
-    for (const v of [p, q, r]) { pos.push(v.x, v.y, v.z); uv.push(v.dot(t) / 1.6, v.dot(s) / 2.4); }
-  }
+/* ---------- One continuous mono-pitch roof over all three modules ---------- */
+const HOUSE_W = 7;   // total length of the house
+const RISE = 0.8;    // back edge is this much higher than the front edge
+const EAVE = 0.35;   // overhang on every side
+
+// Flat quad from 4 points (used for the side gable fills)
+function quad(pts, mat) {
+  const [a, b, c, d] = pts, order = [a, b, c, a, c, d];
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(order.flat(), 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(order.flatMap(p => [p[2] / 1.2, p[1] / 1.2]), 2));
   geo.computeVertexNormals();
-  return { geo, r1, r2, corners: [a, b, c, d] };
+  return shadow(new THREE.Mesh(geo, mat));
 }
 
-function buildRoof(w, oL, oR, spots) {
+function buildRoof() {
   const g = new THREE.Group();
-  const o = 0.35, x0 = -w / 2 - oL, x1 = w / 2 + oR, z0 = -D / 2 - o, z1 = D / 2 + o;
-  const { geo, r1, r2, corners } = hipGeometry(x0, x1, z0, z1, 1.0, 0.6);
-  g.add(shadow(new THREE.Mesh(geo, R.tile)));
-  const p = (v) => [v.x, v.y + 0.02, v.z];
-  rod(p(r1), p(r2), 0.05, R.ridge, g);
-  [0, 3].forEach(i => rod(p(corners[i]), p(r1), 0.035, R.ridge, g));
-  [1, 2].forEach(i => rod(p(corners[i]), p(r2), 0.035, R.ridge, g));
-  // Fascia boards
-  box(x1 - x0, 0.1, 0.03, R.fascia, (x0 + x1) / 2, -0.04, z1, g);
-  box(x1 - x0, 0.1, 0.03, R.fascia, (x0 + x1) / 2, -0.04, z0, g);
-  if (oL) box(0.03, 0.1, z1 - z0, R.fascia, x0, -0.04, 0, g);
-  if (oR) box(0.03, 0.1, z1 - z0, R.fascia, x1, -0.04, 0, g);
-  // Gutters
-  for (const z of [z1 + 0.06, z0 - 0.06]) {
-    const gm = cyl(0.055, 0.055, x1 - x0, R.gutter, (x0 + x1) / 2, -0.07, z, g, 10);
-    gm.rotation.z = Math.PI / 2;
+  const x0 = -HOUSE_W / 2 - EAVE, x1 = HOUSE_W / 2 + EAVE;
+  const z0 = -D / 2 - EAVE, z1 = D / 2 + EAVE;
+  const X = x1 - x0, Z = z1 - z0, T = 0.1;
+  const tilt = Math.atan2(RISE, Z), L = Math.hypot(Z, RISE);
+
+  // Roof slab: tiles on top, dark fascia on the edges and underside
+  const geo = new THREE.BoxGeometry(X, T, L);
+  const uv = geo.attributes.uv;
+  for (let i = 8; i < 12; i++) uv.setXY(i, uv.getX(i) * X / 1.6, uv.getY(i) * L / 2.4); // +y face
+  const slab = shadow(new THREE.Mesh(geo, [R.fascia, R.fascia, R.tile, R.fascia, R.fascia, R.fascia]));
+  slab.rotation.x = tilt; // back edge goes up
+  slab.position.set(0, RISE / 2 + 0.02, 0);
+  g.add(slab);
+
+  // Close the gap between the flat top beam and the sloped roof
+  const under = z => 0.02 + RISE * (z1 - z) / Z - T / 2 / Math.cos(tilt);
+  const yb = under(-D / 2), yf = Math.max(0.001, under(D / 2));
+  for (const x of [-HOUSE_W / 2 + 0.01, HOUSE_W / 2 - 0.01]) {
+    g.add(quad([[x, 0, D / 2], [x, 0, -D / 2], [x, yb, -D / 2], [x, yf, D / 2]], R.clad));
   }
-  // Soffit under the eaves + interior ceiling
-  box(x1 - x0, 0.02, z1 - z0, R.fascia, (x0 + x1) / 2, -0.01, 0, g);
-  box(w - 0.14, 0.03, D - 0.14, R.ceiling, 0, -0.17, 0, g);
-  // Warm spot lamps in the ceiling
-  for (const [sx, sz] of spots) {
-    const s = cyl(0.055, 0.055, 0.02, R.spot, sx, -0.195, sz, g, 16);
-    s.castShadow = false;
-  }
+  box(HOUSE_W, yb, 0.06, R.clad, 0, yb / 2, -D / 2 + 0.06, g);
+
+  // One gutter along the low front edge
+  const gm = cyl(0.06, 0.06, X, R.gutter, 0, -0.06, z1 + 0.07, g, 10);
+  gm.rotation.z = Math.PI / 2;
+
+  // Interior ceiling + warm spot lamps
+  box(HOUSE_W - 0.14, 0.03, D - 0.14, R.ceiling, 0, -0.17, 0, g);
+  const spots = [[-2.8, 0.5], [-1.7, 0.5], [-2.2, -1.2], [0, -1.1], [0, 1.1], [1.7, 0.6], [2.8, 0.6], [2.05, -1.0]];
+  for (const [sx, sz] of spots) cyl(0.055, 0.055, 0.02, R.spot, sx, -0.195, sz, g, 16).castShadow = false;
   return g;
 }
 
@@ -813,17 +814,17 @@ const house = new THREE.Group();
 scene.add(house);
 
 const modules = [
-  { g: buildLiving(), base: -2.2, dir: -1, roof: buildRoof(2.6, 0.35, 0, [[-0.6, 0.5], [0.5, 0.5], [0, -1.2]]) },
-  { g: buildBath(), base: 0, dir: 0, roof: buildRoof(1.8, 0, 0, [[0, -1.1], [0, 1.1]]) },
-  { g: buildBedroom(), base: 2.2, dir: 1, roof: buildRoof(2.6, 0, 0.35, [[-0.5, 0.6], [0.6, 0.6], [-0.15, -1.0]]) },
+  { g: buildLiving(), base: -2.2, dir: -1 },
+  { g: buildBath(), base: 0, dir: 0 },
+  { g: buildBedroom(), base: 2.2, dir: 1 },
 ];
 for (const m of modules) {
   m.g.position.x = m.base;
-  m.g.add(m.roof);
-  m.roof.position.y = ROOFY;
   house.add(m.g);
 }
-// Glass shouldn't cast shadows
+const roof = buildRoof();
+roof.position.y = ROOFY;
+house.add(roof);
 house.traverse(o => { if (o.isMesh && (o.material === M.glass || o.material === M.led)) o.castShadow = false; });
 
 // Ground: grass disc + soft shadows
@@ -861,9 +862,9 @@ const KF = [
   { rot: -0.6,        elev: 0.30, dist: 13,   ty: 1.9, ex: 0,   lift: 0,   op: 1, sx:  0.5, span: [9, 5] },
   { rot: -0.6 + Math.PI, elev: 0.22, dist: 13, ty: 1.9, ex: 0, lift: 0, op: 1, sx: -0.5, span: [9, 5] },
   { rot: -0.6 + TAU,  elev: 0.36, dist: 13.5, ty: 1.9, ex: 0,   lift: 0,   op: 1, sx:  0.5, span: [9, 5] },
-  { rot: TAU,         elev: 1.42, dist: 14,   ty: 1.2, ex: 0,   lift: 0,   op: 1, sx: -0.5, span: [9, 5.4],  prot: TAU - H,       pspan: [5.4, 8.6] },
+  { rot: TAU,         elev: 1.42, dist: 14,   ty: 1.2, ex: 0,   lift: 0,   op: 1, sx: -0.5, span: [10.5, 6.2], prot: TAU - H,       pspan: [5.4, 8.6] },
   { rot: TAU - 0.45,  elev: 0.72, dist: 17,   ty: 2.6, ex: 1,   lift: 2.6, op: 1, sx:  0.5, span: [12.5, 8], prot: TAU - H - 0.35, pspan: [7, 12] },
-  { rot: TAU,         elev: 1.45, dist: 15,   ty: 1.0, ex: 0.3, lift: 6,   op: 0, sx: -0.5, span: [10, 5],   prot: TAU - H,       pspan: [5, 9.6] },
+  { rot: TAU,         elev: 1.45, dist: 15,   ty: 1.0, ex: 0.3, lift: 6,   op: 0, sx: -0.5, span: [12, 6.6], prot: TAU - H,       pspan: [5, 9.6] },
   { rot: TAU + 0.55,  elev: 0.28, dist: 13,   ty: 1.9, ex: 0,   lift: 0,   op: 1, sx:  0.5, span: [9, 5] },
 ];
 const KEYS = ['rot', 'elev', 'dist', 'ty', 'ex', 'lift', 'op', 'sx', 'spx', 'spy'];
@@ -891,10 +892,13 @@ function targetState() {
 /* =========================================================
    Input: cursor (desktop) / horizontal swipe (touch), hero only
    ========================================================= */
-let pointer = 0, drag = 0;
+let pointer = 0, pointerY = 0, drag = 0;
 if (!isTouch) {
-  addEventListener('mousemove', e => { pointer = (e.clientX / innerWidth - 0.5) * 2; }, { passive: true });
-  document.addEventListener('mouseleave', () => { pointer = 0; });
+  addEventListener('mousemove', e => {
+    pointer = (e.clientX / innerWidth - 0.5) * 2;
+    pointerY = (e.clientY / innerHeight - 0.5) * 2; // -1 top … 1 bottom
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { pointer = 0; pointerY = 0; });
 }
 let tStart = null;
 addEventListener('touchstart', e => {
@@ -976,10 +980,10 @@ function setRoofOpacity(op) {
   roofOpaque = opaque;
   const cast = op > 0.5;
   if (cast !== roofShadow) {
-    modules.forEach(m => m.roof.traverse(o => { if (o.isMesh && o.material !== R.spot) o.castShadow = cast; }));
+    roof.traverse(o => { if (o.isMesh && o.material !== R.spot) o.castShadow = cast; });
     roofShadow = cast;
   }
-  modules.forEach(m => { m.roof.visible = op > 0.01; });
+  roof.visible = op > 0.01;
 }
 
 function tick(now) {
@@ -991,6 +995,8 @@ function tick(now) {
   const heroWeight = 1 - clamp01(progress);
   if (progress > 1.2) drag *= 1 - Math.min(1, dt * 2);
   target.rot += (pointer * 0.5 + drag) * heroWeight;
+  // Cursor up = camera higher (more roof), cursor down = closer to eye level
+  target.elev = Math.max(0.06, target.elev - pointerY * 0.28 * heroWeight);
   for (const key of KEYS) state[key] += (target[key] - state[key]) * k;
 
   // House
@@ -998,8 +1004,8 @@ function tick(now) {
   for (const m of modules) {
     m.g.position.x = m.base + m.dir * state.ex * 1.7;
     m.g.position.y = m.dir === 0 ? state.ex * 0.15 : 0;
-    m.roof.position.y = ROOFY + state.lift * (1 + m.dir * 0.08);
   }
+  roof.position.y = ROOFY + state.lift;
   setRoofOpacity(state.op);
 
   // Camera: keep the house in frame on narrow screens
@@ -1007,13 +1013,13 @@ function tick(now) {
   const th = tv * camera.aspect;
   const availX = mobile ? 0.92 : 0.6;
   const availY = mobile ? 0.5 : 0.85;
-  const need = Math.max(state.spx / 2 / (th * availX), state.spy / 2 / (tv * availY));
+  const need = 1.18 * Math.max(state.spx / 2 / (th * availX), state.spy / 2 / (tv * availY));
   const dist = Math.max(state.dist, need);
   lookAt.set(0, state.ty, 0);
   camera.position.set(0, state.ty + dist * Math.sin(state.elev), dist * Math.cos(state.elev));
   camera.lookAt(lookAt);
   const W = innerWidth, Hh = innerHeight;
-  camera.setViewOffset(W, Hh, mobile ? 0 : -state.sx * W * 0.3, mobile ? Hh * 0.2 : 0, W, Hh);
+  camera.setViewOffset(W, Hh, mobile ? 0 : -state.sx * W * 0.22, mobile ? Hh * 0.2 : 0, W, Hh);
 
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
